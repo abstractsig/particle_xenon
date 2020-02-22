@@ -27,13 +27,32 @@
 #define io_board_H_
 #include <io_cpu.h>
 
+#define RESET_PIN				def_nrf_io_input_pin(0,18,NRF_GPIO_ACTIVE_LEVEL_LOW,NRF_GPIO_PIN_NOPULL)
+
 #define LED1_nrf_pin			def_nrf_io_output_pin(1,12,NRF_GPIO_ACTIVE_LEVEL_HIGH,GPIO_PIN_INACTIVE)
 #define LED1					((LED1_nrf_pin).io)
 
 #ifdef IMPLEMENT_IO_BOARD
+
+#define SHORT_DELAY(n)		{volatile int i;	for(i = 0; i < (n * 1000);i++);}
+
+static void
+board_panic (io_t *io,int code) {
+	DISABLE_INTERRUPTS;
+	
+	while (1) {
+		toggle_io_pin (io,LED1);
+		SHORT_DELAY(1000);
+	}
+}
+
 void
 add_io_implementation_board_methods (io_implementation_t *io_i) {
 	add_io_implementation_cpu_methods (io_i);
+	
+	nrf52_configure_reset_pin (RESET_PIN);
+	
+	io_i->panic = board_panic;
 }
 #endif /* IMPLEMENT_IO_BOARD */
 #endif
