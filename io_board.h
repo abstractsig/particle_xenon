@@ -32,7 +32,15 @@
 #define LED1_nrf_pin			def_nrf_io_output_pin(1,12,NRF_GPIO_ACTIVE_LEVEL_HIGH,GPIO_PIN_INACTIVE)
 #define LED1					((LED1_nrf_pin).io)
 
+void	initialise_board_io (io_t*);
+
+
 #ifdef IMPLEMENT_IO_BOARD
+//-----------------------------------------------------------------------------
+//
+// Implementation
+//
+//-----------------------------------------------------------------------------
 
 #define SHORT_DELAY(n)		{volatile int i;	for(i = 0; i < (n * 1000);i++);}
 
@@ -54,6 +62,12 @@ add_io_implementation_board_methods (io_implementation_t *io_i) {
 	
 	io_i->panic = board_panic;
 }
+
+void
+initialise_board_io (io_t *io) {
+	initialise_cpu_io (io);
+}
+
 #endif /* IMPLEMENT_IO_BOARD */
 #endif
 /*
